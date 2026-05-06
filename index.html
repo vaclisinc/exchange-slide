@@ -225,21 +225,42 @@
     animation:kenburns 16s ease-in-out infinite alternate;
     will-change:transform;
   }
-  /* figcaption overlays */
+  /* figcaption overlays — only on .hero */
   .photo-grid figcaption{
     position:absolute;left:0;right:0;bottom:0;
-    padding:22px 26px 18px;
-    background:linear-gradient(to top,rgba(0,0,0,.78),rgba(0,0,0,.0));
+    padding:28px 32px 24px;
+    background:linear-gradient(to top,rgba(0,0,0,.85),rgba(0,0,0,.0));
     color:#fff;z-index:5;pointer-events:none;
-    transition:opacity .3s ease;
+    opacity:0;transform:translateY(8px);
+    transition:opacity .55s ease .25s, transform .55s ease .25s;
   }
-  .photo-grid figcaption span{
+  .photo-grid figcaption .eyebrow{
+    display:block;
+    font-size:11px;letter-spacing:.4em;text-transform:uppercase;
+    color:var(--california-gold);font-weight:500;margin-bottom:6px;
+  }
+  .photo-grid figcaption .title{
     font-family:'Cormorant Garamond',serif;font-style:italic;
-    font-weight:500;font-size:clamp(20px,2vw,32px);
-    letter-spacing:.01em;
-    text-shadow:0 2px 12px rgba(0,0,0,.5);
+    font-weight:500;font-size:clamp(22px,2.2vw,36px);
+    letter-spacing:.01em;line-height:1.15;
+    text-shadow:0 2px 18px rgba(0,0,0,.6);
   }
-  .photo-grid figure.flipping figcaption{opacity:0}
+  .photo-grid figure.hero figcaption{opacity:1;transform:translateY(0)}
+  .photo-grid figure.flipping figcaption{
+    opacity:0;transition:opacity .25s ease;
+  }
+  /* Subtle highlight ring on hero */
+  .photo-grid figure.hero{
+    z-index:3;
+    box-shadow:0 20px 60px -10px rgba(0,40,80,.45);
+  }
+  .photo-grid figure:not(.hero){
+    filter:saturate(.92) brightness(.96);
+    transition:filter .9s ease;
+  }
+  .photo-grid figure.hero{
+    filter:saturate(1.05) brightness(1.02);
+  }
 
   /* Continuous gentle Ken Burns on every grid photo */
   @keyframes kenburns{
@@ -279,73 +300,51 @@
   }
 
   /* ------------------------------------------------------------------
-     MULTI-STATE GRID LAYOUTS (FLIP-driven morphs)
-     Each grid has 3 dramatically different states. JS swaps the
-     state-N class every ~5s and FLIPs photos to their new positions.
+     HERO ROTATION GRIDS
+     Each grid has a single layout. The figure with .hero class is
+     pinned to the large cell (top-left). Other figures auto-flow in
+     source order. JS rotates .hero each tick; FLIP animates the move.
   ------------------------------------------------------------------ */
 
-  /* --- Academic (3 photos) --- */
-  .grid-ac{grid-template-columns:repeat(3,1fr);grid-template-rows:1fr}
-  .grid-ac figure{grid-column:auto;grid-row:auto}
+  /* --- Academic (3 photos): 2x2, hero spans left column --- */
+  .grid-ac{
+    grid-template-columns:1.7fr 1fr;
+    grid-template-rows:1fr 1fr;
+    grid-auto-flow:dense;
+  }
+  .grid-ac figure.hero{ grid-column:1; grid-row:1/span 2; }
 
-  .grid-ac.state-1{grid-template-columns:repeat(3,1fr);grid-template-rows:1fr}
+  /* --- Berkeleytime (6 photos): 3x3, hero 2x2 + 5 small = 9 --- */
+  .grid-bt{
+    grid-template-columns:repeat(3,1fr);
+    grid-template-rows:repeat(3,1fr);
+    grid-auto-flow:dense;
+  }
+  .grid-bt figure.hero{ grid-column:1/span 2; grid-row:1/span 2; }
 
-  .grid-ac.state-2{grid-template-columns:2fr 1fr;grid-template-rows:1fr 1fr}
-  .grid-ac.state-2 figure:nth-child(1){grid-column:1;grid-row:1/span 2}
-  .grid-ac.state-2 figure:nth-child(2){grid-column:2;grid-row:1}
-  .grid-ac.state-2 figure:nth-child(3){grid-column:2;grid-row:2}
+  /* --- Theta Xi (10 photos): 5x3, hero 3x2 + 9 small = 15 perfect --- */
+  .grid-tx{
+    grid-template-columns:repeat(5,1fr);
+    grid-template-rows:repeat(3,1fr);
+    grid-auto-flow:dense;
+  }
+  .grid-tx figure.hero{ grid-column:1/span 3; grid-row:1/span 2; }
 
-  .grid-ac.state-3{grid-template-columns:1fr 2fr;grid-template-rows:1fr 1fr}
-  .grid-ac.state-3 figure:nth-child(1){grid-column:1;grid-row:1}
-  .grid-ac.state-3 figure:nth-child(2){grid-column:1;grid-row:2}
-  .grid-ac.state-3 figure:nth-child(3){grid-column:2;grid-row:1/span 2}
+  /* --- iHouse (7 photos): 5x2, hero 2x2 + 6 small = 10 perfect --- */
+  .grid-ih{
+    grid-template-columns:repeat(5,1fr);
+    grid-template-rows:repeat(2,1fr);
+    grid-auto-flow:dense;
+  }
+  .grid-ih figure.hero{ grid-column:1/span 2; grid-row:1/span 2; }
 
-  /* --- Berkeleytime (6 photos) --- */
-  .grid-bt{grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr)}
-  .grid-bt figure{grid-column:auto;grid-row:auto}
-
-  .grid-bt.state-1 figure:nth-child(1){grid-column:span 2;grid-row:span 2}
-
-  .grid-bt.state-2{grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr)}
-  .grid-bt.state-2 figure:nth-child(4){grid-column:span 2;grid-row:span 2}
-
-  .grid-bt.state-3{grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(2,1fr)}
-
-  /* --- Theta Xi (10 photos) --- */
-  .grid-tx{grid-template-columns:repeat(5,1fr);grid-template-rows:repeat(3,1fr)}
-  .grid-tx figure{grid-column:auto;grid-row:auto}
-
-  .grid-tx.state-1 figure:nth-child(1){grid-column:span 2;grid-row:span 2}
-  .grid-tx.state-1 figure:nth-child(6){grid-column:span 2;grid-row:span 1}
-
-  .grid-tx.state-2{grid-template-columns:repeat(5,1fr);grid-template-rows:repeat(3,1fr)}
-  .grid-tx.state-2 figure:nth-child(5){grid-column:span 2;grid-row:span 2}
-  .grid-tx.state-2 figure:nth-child(9){grid-column:span 2;grid-row:span 1}
-
-  .grid-tx.state-3{grid-template-columns:repeat(5,1fr);grid-template-rows:repeat(2,1fr)}
-
-  /* --- iHouse (8 photos) --- */
-  .grid-ih{grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(2,1fr)}
-  .grid-ih figure{grid-column:auto;grid-row:auto}
-
-  .grid-ih.state-1{grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(2,1fr)}
-
-  .grid-ih.state-2{grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(3,1fr)}
-  .grid-ih.state-2 figure:nth-child(1){grid-column:span 2;grid-row:span 2}
-
-  .grid-ih.state-3{grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(3,1fr)}
-  .grid-ih.state-3 figure:nth-child(5){grid-column:span 2;grid-row:span 2}
-
-  /* --- Travel (5 photos) --- */
-  .grid-tv{grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(2,1fr)}
-  .grid-tv figure{grid-column:auto;grid-row:auto}
-
-  .grid-tv.state-1 figure:nth-child(1){grid-column:span 2;grid-row:span 2}
-
-  .grid-tv.state-2{grid-template-columns:repeat(5,1fr);grid-template-rows:1fr}
-
-  .grid-tv.state-3{grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr)}
-  .grid-tv.state-3 figure:nth-child(3){grid-column:span 2;grid-row:span 2}
+  /* --- Travel (5 photos): 4x2, hero 2x2 + 4 small = 8 perfect --- */
+  .grid-tv{
+    grid-template-columns:repeat(4,1fr);
+    grid-template-rows:repeat(2,1fr);
+    grid-auto-flow:dense;
+  }
+  .grid-tv figure.hero{ grid-column:1/span 2; grid-row:1/span 2; }
 
   /* NYC slide - editorial layout */
   .nyc{
@@ -438,22 +437,23 @@
         <h2>An <em>academic</em> semester.</h2>
       </div>
       <div class="stat">
-        Machine learning, computer music,<br/>
-        and a pitch at <em>AGI House</em>.
+        CS 189 · 180 · 185 · Music 159 ·<br/>
+        joined <em>BAIR</em> & <em>CNMAT</em>,<br/>
+        pitched at AGI House.
       </div>
     </div>
-    <div class="photo-grid grid-ac state-1">
-      <figure>
+    <div class="photo-grid grid-ac">
+      <figure class="hero">
         <img src="assets/bair.JPG" alt="">
-        <figcaption><span>BAIR Lab</span></figcaption>
+        <figcaption><span class="eyebrow">Research</span><span class="title">BAIR Lab</span></figcaption>
       </figure>
       <figure>
         <img src="assets/cdss94-course.PNG" alt="">
-        <figcaption><span>CDSS 94</span></figcaption>
+        <figcaption><span class="eyebrow">Course</span><span class="title">CDSS 94</span></figcaption>
       </figure>
       <figure>
         <img src="assets/cdss94-course-final.jpg" alt="">
-        <figcaption><span>Pitch · AGI House</span></figcaption>
+        <figcaption><span class="eyebrow">Final pitch</span><span class="title">AGI House</span></figcaption>
       </figure>
     </div>
     <div class="footer dark"><span>I · Curriculum</span><span>02 / 08</span></div>
@@ -472,13 +472,31 @@
         joined as a member, became <em>Pod Lead</em>.
       </div>
     </div>
-    <div class="photo-grid grid-bt state-1">
-      <figure><img src="assets/berkeleytime-retreat.jpg" alt=""></figure>
-      <figure><img src="assets/berkeleytime-asuc-showcase.JPG" alt=""></figure>
-      <figure><img src="assets/berkeleytime-social.jpg" alt=""></figure>
-      <figure><img src="assets/berkeleytime-big-little.jpg" alt=""></figure>
-      <figure><img src="assets/berkeleytime-retreat2.JPG" alt=""></figure>
-      <figure><img src="assets/berkeleytime-friend-grad-photo.JPG" alt=""></figure>
+    <div class="photo-grid grid-bt">
+      <figure class="hero">
+        <img src="assets/berkeleytime-retreat.jpg" alt="">
+        <figcaption><span class="eyebrow">Team</span><span class="title">The Berkeleytime Retreat</span></figcaption>
+      </figure>
+      <figure>
+        <img src="assets/berkeleytime-asuc-showcase.JPG" alt="">
+        <figcaption><span class="eyebrow">Showcase</span><span class="title">ASUC Demo Day</span></figcaption>
+      </figure>
+      <figure>
+        <img src="assets/berkeleytime-social.jpg" alt="">
+        <figcaption><span class="eyebrow">After hours</span><span class="title">Pod Socials</span></figcaption>
+      </figure>
+      <figure>
+        <img src="assets/berkeleytime-big-little.jpg" alt="">
+        <figcaption><span class="eyebrow">Mentorship</span><span class="title">Big & Little</span></figcaption>
+      </figure>
+      <figure>
+        <img src="assets/berkeleytime-retreat2.JPG" alt="">
+        <figcaption><span class="eyebrow">Off-site</span><span class="title">Spring Retreat</span></figcaption>
+      </figure>
+      <figure>
+        <img src="assets/berkeleytime-friend-grad-photo.JPG" alt="">
+        <figcaption><span class="eyebrow">Goodbyes</span><span class="title">Berkeleytime Graduates Members</span></figcaption>
+      </figure>
     </div>
     <div class="footer dark"><span>II · Community</span><span>03 / 08</span></div>
   </section>
@@ -496,17 +514,47 @@
         and the wildest stories of the year.
       </div>
     </div>
-    <div class="photo-grid grid-tx state-1">
-      <figure><img src="assets/theta-xi-composite-photo.JPG" alt=""></figure>
-      <figure><img src="assets/theta-xi-initialization.JPG" alt=""></figure>
-      <figure><img src="assets/theta-xi-pinning.JPG" alt=""></figure>
-      <figure><img src="assets/theta-xi-chapter-dinner.JPG" alt=""></figure>
-      <figure><img src="assets/theta-xi-party-first.JPG" alt=""></figure>
-      <figure><img src="assets/theta-xi-6294-alumnis.JPG" alt=""></figure>
-      <figure><img src="assets/theta-xi-mural-pledge-project.JPG" alt=""></figure>
-      <figure><img src="assets/theta-xi-retreat.jpg" alt=""></figure>
-      <figure><img src="assets/theta-xi-world-cup.jpg" alt=""></figure>
-      <figure><img src="assets/theta-xi-social.JPG" alt=""></figure>
+    <div class="photo-grid grid-tx">
+      <figure class="hero">
+        <img src="assets/theta-xi-composite-photo.JPG" alt="">
+        <figcaption><span class="eyebrow">The Brothers</span><span class="title">Composite Day</span></figcaption>
+      </figure>
+      <figure>
+        <img src="assets/theta-xi-initialization.JPG" alt="">
+        <figcaption><span class="eyebrow">Initiation</span><span class="title">Becoming a Brother</span></figcaption>
+      </figure>
+      <figure>
+        <img src="assets/theta-xi-pinning.JPG" alt="">
+        <figcaption><span class="eyebrow">Pinning</span><span class="title">The Letters</span></figcaption>
+      </figure>
+      <figure>
+        <img src="assets/theta-xi-chapter-dinner.JPG" alt="">
+        <figcaption><span class="eyebrow">House Tradition</span><span class="title">Chapter Dinner</span></figcaption>
+      </figure>
+      <figure>
+        <img src="assets/theta-xi-party-first.JPG" alt="">
+        <figcaption><span class="eyebrow">First weekend</span><span class="title">My First Theta Xi Party</span></figcaption>
+      </figure>
+      <figure>
+        <img src="assets/theta-xi-6294-alumnis.JPG" alt="">
+        <figcaption><span class="eyebrow">Legacy</span><span class="title">6294 · The Alumni</span></figcaption>
+      </figure>
+      <figure>
+        <img src="assets/theta-xi-mural-pledge-project.JPG" alt="">
+        <figcaption><span class="eyebrow">Pledge project</span><span class="title">The Mural</span></figcaption>
+      </figure>
+      <figure>
+        <img src="assets/theta-xi-retreat.jpg" alt="">
+        <figcaption><span class="eyebrow">Brotherhood</span><span class="title">Chapter Retreat</span></figcaption>
+      </figure>
+      <figure>
+        <img src="assets/theta-xi-world-cup.jpg" alt="">
+        <figcaption><span class="eyebrow">Game day</span><span class="title">World Cup at the House</span></figcaption>
+      </figure>
+      <figure>
+        <img src="assets/theta-xi-social.JPG" alt="">
+        <figcaption><span class="eyebrow">Greek life</span><span class="title">Social Night</span></figcaption>
+      </figure>
     </div>
     <div class="footer dark"><span>II · Community</span><span>04 / 08</span></div>
   </section>
@@ -524,15 +572,35 @@
         gathered under one roof.
       </div>
     </div>
-    <div class="photo-grid grid-ih state-1">
-      <figure><img src="assets/ihouse_taiwan_diversitea.jpg" alt=""></figure>
-      <figure><img src="assets/japanese_冬至.jpg" alt=""></figure>
-      <figure><img src="assets/ihouse_taiwanese.jpg" alt=""></figure>
-      <figure><img src="assets/shohei.jpg" alt=""></figure>
-      <figure><img src="assets/bay-area-taiwanese.JPG" alt=""></figure>
-      <figure><img src="assets/cal-day-party.JPG" alt=""></figure>
-      <figure><img src="assets/cal-day-party-2.jpg" alt=""></figure>
-      <figure><img src="assets/berkeleytime-friend-grad-photo.JPG" alt=""></figure>
+    <div class="photo-grid grid-ih">
+      <figure class="hero">
+        <img src="assets/ihouse_taiwan_diversitea.jpg" alt="">
+        <figcaption><span class="eyebrow">I-House · Taiwan</span><span class="title">Diversitea</span></figcaption>
+      </figure>
+      <figure>
+        <img src="assets/japanese_冬至.jpg" alt="">
+        <figcaption><span class="eyebrow">Japanese friends</span><span class="title">Winter Solstice</span></figcaption>
+      </figure>
+      <figure>
+        <img src="assets/ihouse_taiwanese.jpg" alt="">
+        <figcaption><span class="eyebrow">Home away</span><span class="title">Taiwanese at I-House</span></figcaption>
+      </figure>
+      <figure>
+        <img src="assets/shohei.jpg" alt="">
+        <figcaption><span class="eyebrow">MLB</span><span class="title">Greeting Shohei with Japanese Friends</span></figcaption>
+      </figure>
+      <figure>
+        <img src="assets/bay-area-taiwanese.JPG" alt="">
+        <figcaption><span class="eyebrow">Bay Area</span><span class="title">Taiwanese Networking</span></figcaption>
+      </figure>
+      <figure>
+        <img src="assets/cal-day-party.JPG" alt="">
+        <figcaption><span class="eyebrow">Cal Day</span><span class="title">My first Cal Day</span></figcaption>
+      </figure>
+      <figure>
+        <img src="assets/cal-day-party-2.jpg" alt="">
+        <figcaption><span class="eyebrow">Cal Day</span><span class="title">Frat Party during day time</span></figcaption>
+      </figure>
     </div>
     <div class="footer dark"><span>II · Community</span><span>05 / 08</span></div>
   </section>
@@ -550,12 +618,27 @@
         the Grand Canyon at sunrise.
       </div>
     </div>
-    <div class="photo-grid grid-tv state-1">
-      <figure><img src="assets/great_canyon.JPG" alt=""></figure>
-      <figure><img src="assets/vegas.JPG" alt=""></figure>
-      <figure><img src="assets/LA-disney.jpg" alt=""></figure>
-      <figure><img src="assets/LA.JPG" alt=""></figure>
-      <figure><img src="assets/LA2.JPG" alt=""></figure>
+    <div class="photo-grid grid-tv">
+      <figure class="hero">
+        <img src="assets/great_canyon.JPG" alt="">
+        <figcaption><span class="eyebrow">Arizona</span><span class="title">Grand Canyon at Sunrise</span></figcaption>
+      </figure>
+      <figure>
+        <img src="assets/vegas.JPG" alt="">
+        <figcaption><span class="eyebrow">Nevada</span><span class="title">Vegas Strip</span></figcaption>
+      </figure>
+      <figure>
+        <img src="assets/LA-disney.jpg" alt="">
+        <figcaption><span class="eyebrow">Anaheim</span><span class="title">Disneyland</span></figcaption>
+      </figure>
+      <figure>
+        <img src="assets/LA.JPG" alt="">
+        <figcaption><span class="eyebrow">California</span><span class="title">Los Angeles</span></figcaption>
+      </figure>
+      <figure>
+        <img src="assets/LA2.JPG" alt="">
+        <figcaption><span class="eyebrow">Road trip</span><span class="title">South of Berkeley</span></figcaption>
+      </figure>
     </div>
     <div class="footer dark"><span>III · Travel</span><span>06 / 08</span></div>
   </section>
@@ -613,30 +696,24 @@
   // Per-slide duration in ms (tuned to ~5min total)
   const durations = [25000, 45000, 40000, 50000, 40000, 40000, 35000, 25000];
 
-  /* ----------- FLIP LAYOUT MORPHING ----------- */
-  // Each grid cycles through state classes; FLIP animates photos
-  // smoothly from old positions/sizes to new ones.
-  const STATES = ['state-1','state-2','state-3'];
+  /* ----------- HERO ROTATION (FLIP-driven) ----------- */
+  // Each grid has exactly one figure with .hero (the big tile).
+  // rotateHero moves .hero to the next figure and animates the
+  // resulting layout change with FLIP.
 
-  function flipMorph(grid){
+  function flipMorph(grid, mutate){
     const figs = Array.from(grid.querySelectorAll('figure'));
     if(!figs.length) return;
 
-    // 1. measure (FIRST)
+    // 1. FIRST — measure
     const old = figs.map(f => f.getBoundingClientRect());
 
-    // 2. swap state class (LAST)
-    let cur = STATES.findIndex(s => grid.classList.contains(s));
-    if(cur < 0) cur = 0;
-    grid.classList.remove(STATES[cur]);
-    const next = (cur + 1) % STATES.length;
-    grid.classList.add(STATES[next]);
-
-    // force reflow before measuring new
+    // 2. LAST — apply layout change
+    mutate();
     void grid.offsetWidth;
     const fresh = figs.map(f => f.getBoundingClientRect());
 
-    // 3. INVERT — set figures back to old position via transform
+    // 3. INVERT — pin figures to their old position with transforms
     figs.forEach((f, i) => {
       const dx = old[i].left - fresh[i].left;
       const dy = old[i].top  - fresh[i].top;
@@ -645,12 +722,11 @@
       f.style.transition = 'none';
       f.style.transformOrigin = '0 0';
       f.style.transform = `translate(${dx}px,${dy}px) scale(${sx},${sy})`;
-      // Pause Ken Burns on img to avoid compound scaling weirdness
       const img = f.querySelector('img');
       if(img) img.style.animationPlayState = 'paused';
     });
 
-    // 4. PLAY — next frame, animate to identity
+    // 4. PLAY — animate to identity
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
         figs.forEach(f => {
@@ -673,6 +749,17 @@
     }, 1150);
   }
 
+  function rotateHero(grid){
+    const figs = Array.from(grid.querySelectorAll('figure'));
+    if(figs.length < 2) return;
+    flipMorph(grid, () => {
+      const cur = figs.findIndex(f => f.classList.contains('hero'));
+      const next = (cur < 0 ? 0 : (cur + 1) % figs.length);
+      figs.forEach(f => f.classList.remove('hero'));
+      figs[next].classList.add('hero');
+    });
+  }
+
   function stopFlipCycle(){
     clearInterval(flipTimer); clearTimeout(flipStartTimer);
     flipTimer = flipStartTimer = null;
@@ -682,23 +769,25 @@
     stopFlipCycle();
     const grid = slide.querySelector('.photo-grid');
     if(!grid) return;
-    // Reset state and any leftover inline styles from a prior FLIP
-    STATES.forEach(s => grid.classList.remove(s));
-    grid.classList.add('state-1');
-    grid.querySelectorAll('figure').forEach(f => {
+
+    // Reset: clear any leftover inline styles from a prior FLIP,
+    // and pin .hero back to the first figure for a consistent entry.
+    const figs = Array.from(grid.querySelectorAll('figure'));
+    figs.forEach((f, i) => {
       f.classList.remove('flipping');
       f.style.transition = '';
       f.style.transformOrigin = '';
       f.style.transform = '';
       const img = f.querySelector('img');
       if(img) img.style.animationPlayState = '';
+      f.classList.toggle('hero', i === 0);
     });
 
-    // Wait for entrance stagger to finish (last figure: ~.77s + .9s anim)
+    // Wait for entrance stagger to finish (~1.5s), then start hero rotation
     flipStartTimer = setTimeout(() => {
-      flipMorph(grid);
-      flipTimer = setInterval(() => flipMorph(grid), 4800);
-    }, 2000);
+      rotateHero(grid);
+      flipTimer = setInterval(() => rotateHero(grid), 3500);
+    }, 2200);
   }
 
   function show(i){
