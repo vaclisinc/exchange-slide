@@ -210,62 +210,55 @@
   }
   .photo-grid{
     display:grid;gap:8px;width:100%;flex:1 1 auto;min-height:0;
+    grid-auto-flow:dense;
   }
   .photo-grid figure{
     margin:0;overflow:hidden;background:#222;border-radius:2px;
     position:relative;z-index:1;
-    transform:scale(1);
-    box-shadow:0 0 0 rgba(0,0,0,0);
-    transition:
-      transform .9s cubic-bezier(.22,.61,.36,1),
-      box-shadow .9s ease,
-      opacity .7s ease,
-      filter .7s ease;
+    will-change:transform;
     opacity:0;
     animation:figIn .9s cubic-bezier(.22,.61,.36,1) forwards;
   }
   .photo-grid img{
     width:100%;height:100%;object-fit:cover;display:block;
-    border-radius:2px;
     transform-origin:center center;
     animation:kenburns 16s ease-in-out infinite alternate;
     will-change:transform;
   }
+  /* figcaption overlays */
+  .photo-grid figcaption{
+    position:absolute;left:0;right:0;bottom:0;
+    padding:22px 26px 18px;
+    background:linear-gradient(to top,rgba(0,0,0,.78),rgba(0,0,0,.0));
+    color:#fff;z-index:5;pointer-events:none;
+    transition:opacity .3s ease;
+  }
+  .photo-grid figcaption span{
+    font-family:'Cormorant Garamond',serif;font-style:italic;
+    font-weight:500;font-size:clamp(20px,2vw,32px);
+    letter-spacing:.01em;
+    text-shadow:0 2px 12px rgba(0,0,0,.5);
+  }
+  .photo-grid figure.flipping figcaption{opacity:0}
 
   /* Continuous gentle Ken Burns on every grid photo */
   @keyframes kenburns{
     0%   {transform:scale(1.0)  translate(0,0)}
     100% {transform:scale(1.08) translate(-1.5%,-1%)}
   }
-  /* Stagger Ken Burns directions/timings so the wall feels alive */
   .photo-grid figure:nth-child(3n)   img{animation-duration:18s;animation-delay:-3s}
   .photo-grid figure:nth-child(3n+1) img{animation-duration:14s;animation-delay:-7s}
   .photo-grid figure:nth-child(3n+2) img{animation-duration:20s;animation-delay:-11s}
-  .photo-grid figure:nth-child(even) img{
-    animation-name:kenburns-r;
-  }
+  .photo-grid figure:nth-child(even) img{animation-name:kenburns-r}
   @keyframes kenburns-r{
     0%   {transform:scale(1.06) translate(1.5%,1%)}
     100% {transform:scale(1.0)  translate(0,0)}
   }
 
-  /* Spotlight: one photo at a time pops out of the grid */
-  .photo-grid figure.spotlight{
-    transform:scale(1.07);
-    z-index:10;
-    box-shadow:0 30px 70px -10px rgba(0,40,80,.45),
-               0 10px 30px -5px rgba(0,0,0,.25);
-  }
-  .photo-grid:has(.spotlight) figure:not(.spotlight){
-    opacity:.55;
-    filter:saturate(.7) brightness(.92);
-    transform:scale(.985);
-  }
-
   /* Entrance animation when slide becomes active */
   @keyframes figIn{
-    from{opacity:0;transform:translateY(18px) scale(.96)}
-    to  {opacity:1;transform:translateY(0)    scale(1)}
+    from{opacity:0}
+    to  {opacity:1}
   }
   .photo-grid figure:nth-child(1){animation-delay:.05s}
   .photo-grid figure:nth-child(2){animation-delay:.13s}
@@ -277,36 +270,82 @@
   .photo-grid figure:nth-child(8){animation-delay:.61s}
   .photo-grid figure:nth-child(9){animation-delay:.69s}
   .photo-grid figure:nth-child(10){animation-delay:.77s}
-  /* Re-trigger entrance when slide reactivates */
   .slide:not(.active) .photo-grid figure{animation:none;opacity:0}
 
-  /* Berkeleytime grid */
-  .grid-bt{
-    grid-template-columns:repeat(4,1fr);
-    grid-template-rows:repeat(2,1fr);
-  }
-  .grid-bt figure:nth-child(1){grid-column:span 2;grid-row:span 2}
-
-  /* Theta Xi mosaic */
-  .grid-tx{
-    grid-template-columns:repeat(5,1fr);
-    grid-template-rows:repeat(3,1fr);
-  }
-  .grid-tx figure:nth-child(1){grid-column:span 2;grid-row:span 2}
-  .grid-tx figure:nth-child(6){grid-column:span 2;grid-row:span 1}
-
-  /* iHouse grid */
-  .grid-ih{
-    grid-template-columns:repeat(4,1fr);
-    grid-template-rows:repeat(2,1fr);
+  /* FLIP transition class — applied during layout morph */
+  .photo-grid figure.flipping{
+    transition:transform 1.05s cubic-bezier(.7,0,.2,1) !important;
+    z-index:2;
   }
 
-  /* Travel grid */
-  .grid-tv{
-    grid-template-columns:repeat(4,1fr);
-    grid-template-rows:repeat(2,1fr);
-  }
-  .grid-tv figure:nth-child(1){grid-column:span 2;grid-row:span 2}
+  /* ------------------------------------------------------------------
+     MULTI-STATE GRID LAYOUTS (FLIP-driven morphs)
+     Each grid has 3 dramatically different states. JS swaps the
+     state-N class every ~5s and FLIPs photos to their new positions.
+  ------------------------------------------------------------------ */
+
+  /* --- Academic (3 photos) --- */
+  .grid-ac{grid-template-columns:repeat(3,1fr);grid-template-rows:1fr}
+  .grid-ac figure{grid-column:auto;grid-row:auto}
+
+  .grid-ac.state-1{grid-template-columns:repeat(3,1fr);grid-template-rows:1fr}
+
+  .grid-ac.state-2{grid-template-columns:2fr 1fr;grid-template-rows:1fr 1fr}
+  .grid-ac.state-2 figure:nth-child(1){grid-column:1;grid-row:1/span 2}
+  .grid-ac.state-2 figure:nth-child(2){grid-column:2;grid-row:1}
+  .grid-ac.state-2 figure:nth-child(3){grid-column:2;grid-row:2}
+
+  .grid-ac.state-3{grid-template-columns:1fr 2fr;grid-template-rows:1fr 1fr}
+  .grid-ac.state-3 figure:nth-child(1){grid-column:1;grid-row:1}
+  .grid-ac.state-3 figure:nth-child(2){grid-column:1;grid-row:2}
+  .grid-ac.state-3 figure:nth-child(3){grid-column:2;grid-row:1/span 2}
+
+  /* --- Berkeleytime (6 photos) --- */
+  .grid-bt{grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr)}
+  .grid-bt figure{grid-column:auto;grid-row:auto}
+
+  .grid-bt.state-1 figure:nth-child(1){grid-column:span 2;grid-row:span 2}
+
+  .grid-bt.state-2{grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr)}
+  .grid-bt.state-2 figure:nth-child(4){grid-column:span 2;grid-row:span 2}
+
+  .grid-bt.state-3{grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(2,1fr)}
+
+  /* --- Theta Xi (10 photos) --- */
+  .grid-tx{grid-template-columns:repeat(5,1fr);grid-template-rows:repeat(3,1fr)}
+  .grid-tx figure{grid-column:auto;grid-row:auto}
+
+  .grid-tx.state-1 figure:nth-child(1){grid-column:span 2;grid-row:span 2}
+  .grid-tx.state-1 figure:nth-child(6){grid-column:span 2;grid-row:span 1}
+
+  .grid-tx.state-2{grid-template-columns:repeat(5,1fr);grid-template-rows:repeat(3,1fr)}
+  .grid-tx.state-2 figure:nth-child(5){grid-column:span 2;grid-row:span 2}
+  .grid-tx.state-2 figure:nth-child(9){grid-column:span 2;grid-row:span 1}
+
+  .grid-tx.state-3{grid-template-columns:repeat(5,1fr);grid-template-rows:repeat(2,1fr)}
+
+  /* --- iHouse (8 photos) --- */
+  .grid-ih{grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(2,1fr)}
+  .grid-ih figure{grid-column:auto;grid-row:auto}
+
+  .grid-ih.state-1{grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(2,1fr)}
+
+  .grid-ih.state-2{grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(3,1fr)}
+  .grid-ih.state-2 figure:nth-child(1){grid-column:span 2;grid-row:span 2}
+
+  .grid-ih.state-3{grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(3,1fr)}
+  .grid-ih.state-3 figure:nth-child(5){grid-column:span 2;grid-row:span 2}
+
+  /* --- Travel (5 photos) --- */
+  .grid-tv{grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(2,1fr)}
+  .grid-tv figure{grid-column:auto;grid-row:auto}
+
+  .grid-tv.state-1 figure:nth-child(1){grid-column:span 2;grid-row:span 2}
+
+  .grid-tv.state-2{grid-template-columns:repeat(5,1fr);grid-template-rows:1fr}
+
+  .grid-tv.state-3{grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr)}
+  .grid-tv.state-3 figure:nth-child(3){grid-column:span 2;grid-row:span 2}
 
   /* NYC slide - editorial layout */
   .nyc{
@@ -384,44 +423,38 @@
       <h1>An Exchange<br/><span class="amp">to</span> Remember</h1>
       <div class="rule"></div>
       <div class="meta">
-        <span class="name" style="display:block;font-size:32px;color:#fff;margin-bottom:18px;letter-spacing:0">[ Your Name ]</span>
+        <span class="name" style="display:block;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:42px;color:#fff;margin-bottom:22px;letter-spacing:0;font-weight:500">Song-Ze (Jimmy) Yu</span>
         Computer Science<span class="dot" style="display:inline-block;width:4px;height:4px;border-radius:50%;background:var(--california-gold);margin:0 14px;vertical-align:middle"></span>National Tsing Hua University<span class="name">— Taiwan —</span>
       </div>
     </div>
     <div class="footer"><span>Spring 2026</span><span>01 / 08</span></div>
   </section>
 
-  <!-- 2: CURRICULUM -->
-  <section class="slide curriculum">
-    <div class="split">
-      <div class="text">
+  <!-- 2: CURRICULUM (photo-driven) -->
+  <section class="slide grid-slide">
+    <div class="header">
+      <div>
         <div class="tag">I · In the Classroom</div>
-        <h2>Where curiosity<br/>met <em>computation</em>.</h2>
-        <p class="lede">A semester immersed in machine learning, music, and the strange beauty between them.</p>
-
-        <div class="pills">
-          <span class="pill-tag gold">CS 189 · ML</span>
-          <span class="pill-tag gold">CS 180 · Vision</span>
-          <span class="pill-tag gold">CS 185 · NLP</span>
-          <span class="pill-tag">Music 159</span>
-          <span class="pill-tag">CDSS 94</span>
-        </div>
-
-        <ul class="bullets">
-          <li>Joined <strong>CNMAT</strong> & <strong>BAIR Lab</strong> — research at the intersection of AI and sound.</li>
-          <li><strong>Five research projects:</strong> two under review, three in submission.</li>
-          <li>Built and pitched a project at <strong>AGI House</strong>, sponsored by a former Apple ML engineer & ex-Anthropic instructor.</li>
-          <li>Currently co-authoring a paper with friends from <strong>Stanford</strong>.</li>
-        </ul>
+        <h2>An <em>academic</em> semester.</h2>
       </div>
-
-      <div class="gallery">
-        <div class="cycler" style="--dur:15s">
-          <img src="assets/bair.JPG" alt="" style="animation-delay:0s">
-          <img src="assets/cdss94-course-final.jpg" alt="" style="animation-delay:5s">
-          <img src="assets/cdss94-course.PNG" alt="" style="animation-delay:10s">
-        </div>
+      <div class="stat">
+        Machine learning, computer music,<br/>
+        and a pitch at <em>AGI House</em>.
       </div>
+    </div>
+    <div class="photo-grid grid-ac state-1">
+      <figure>
+        <img src="assets/bair.JPG" alt="">
+        <figcaption><span>BAIR Lab</span></figcaption>
+      </figure>
+      <figure>
+        <img src="assets/cdss94-course.PNG" alt="">
+        <figcaption><span>CDSS 94</span></figcaption>
+      </figure>
+      <figure>
+        <img src="assets/cdss94-course-final.jpg" alt="">
+        <figcaption><span>Pitch · AGI House</span></figcaption>
+      </figure>
     </div>
     <div class="footer dark"><span>I · Curriculum</span><span>02 / 08</span></div>
   </section>
@@ -439,7 +472,7 @@
         joined as a member, became <em>Pod Lead</em>.
       </div>
     </div>
-    <div class="photo-grid grid-bt">
+    <div class="photo-grid grid-bt state-1">
       <figure><img src="assets/berkeleytime-retreat.jpg" alt=""></figure>
       <figure><img src="assets/berkeleytime-asuc-showcase.JPG" alt=""></figure>
       <figure><img src="assets/berkeleytime-social.jpg" alt=""></figure>
@@ -463,7 +496,7 @@
         and the wildest stories of the year.
       </div>
     </div>
-    <div class="photo-grid grid-tx">
+    <div class="photo-grid grid-tx state-1">
       <figure><img src="assets/theta-xi-composite-photo.JPG" alt=""></figure>
       <figure><img src="assets/theta-xi-initialization.JPG" alt=""></figure>
       <figure><img src="assets/theta-xi-pinning.JPG" alt=""></figure>
@@ -491,7 +524,7 @@
         gathered under one roof.
       </div>
     </div>
-    <div class="photo-grid grid-ih">
+    <div class="photo-grid grid-ih state-1">
       <figure><img src="assets/ihouse_taiwan_diversitea.jpg" alt=""></figure>
       <figure><img src="assets/japanese_冬至.jpg" alt=""></figure>
       <figure><img src="assets/ihouse_taiwanese.jpg" alt=""></figure>
@@ -517,7 +550,7 @@
         the Grand Canyon at sunrise.
       </div>
     </div>
-    <div class="photo-grid grid-tv">
+    <div class="photo-grid grid-tv state-1">
       <figure><img src="assets/great_canyon.JPG" alt=""></figure>
       <figure><img src="assets/vegas.JPG" alt=""></figure>
       <figure><img src="assets/LA-disney.jpg" alt=""></figure>
@@ -575,33 +608,97 @@
   let idx = 0;
   let auto = true;
   let timer = null;
-  let spotTimer = null;
-  let spotStartTimer = null;
-  // Per-slide duration in ms (tuned to ~5min total: 25+45+40+50+40+40+30+25 ≈ 295s)
+  let flipTimer = null;
+  let flipStartTimer = null;
+  // Per-slide duration in ms (tuned to ~5min total)
   const durations = [25000, 45000, 40000, 50000, 40000, 40000, 35000, 25000];
 
-  function stopSpotlight(){
-    clearInterval(spotTimer); clearTimeout(spotStartTimer);
-    spotTimer = spotStartTimer = null;
-    document.querySelectorAll('.photo-grid figure.spotlight')
-      .forEach(f => f.classList.remove('spotlight'));
-  }
-  function startSpotlight(slide){
-    stopSpotlight();
-    const figs = slide.querySelectorAll('.photo-grid figure');
+  /* ----------- FLIP LAYOUT MORPHING ----------- */
+  // Each grid cycles through state classes; FLIP animates photos
+  // smoothly from old positions/sizes to new ones.
+  const STATES = ['state-1','state-2','state-3'];
+
+  function flipMorph(grid){
+    const figs = Array.from(grid.querySelectorAll('figure'));
     if(!figs.length) return;
-    // Hold time per photo — slightly randomized feel via prime-ish number
-    const HOLD = 2300;
-    // Wait for entrance stagger to settle before starting spotlight
-    spotStartTimer = setTimeout(() => {
-      let i = Math.floor(Math.random() * figs.length);
-      figs[i].classList.add('spotlight');
-      spotTimer = setInterval(() => {
-        figs[i].classList.remove('spotlight');
-        i = (i + 1) % figs.length;
-        figs[i].classList.add('spotlight');
-      }, HOLD);
-    }, 1800);
+
+    // 1. measure (FIRST)
+    const old = figs.map(f => f.getBoundingClientRect());
+
+    // 2. swap state class (LAST)
+    let cur = STATES.findIndex(s => grid.classList.contains(s));
+    if(cur < 0) cur = 0;
+    grid.classList.remove(STATES[cur]);
+    const next = (cur + 1) % STATES.length;
+    grid.classList.add(STATES[next]);
+
+    // force reflow before measuring new
+    void grid.offsetWidth;
+    const fresh = figs.map(f => f.getBoundingClientRect());
+
+    // 3. INVERT — set figures back to old position via transform
+    figs.forEach((f, i) => {
+      const dx = old[i].left - fresh[i].left;
+      const dy = old[i].top  - fresh[i].top;
+      const sx = old[i].width  / Math.max(1, fresh[i].width);
+      const sy = old[i].height / Math.max(1, fresh[i].height);
+      f.style.transition = 'none';
+      f.style.transformOrigin = '0 0';
+      f.style.transform = `translate(${dx}px,${dy}px) scale(${sx},${sy})`;
+      // Pause Ken Burns on img to avoid compound scaling weirdness
+      const img = f.querySelector('img');
+      if(img) img.style.animationPlayState = 'paused';
+    });
+
+    // 4. PLAY — next frame, animate to identity
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        figs.forEach(f => {
+          f.classList.add('flipping');
+          f.style.transform = '';
+        });
+      });
+    });
+
+    // 5. cleanup after transition
+    setTimeout(() => {
+      figs.forEach(f => {
+        f.classList.remove('flipping');
+        f.style.transition = '';
+        f.style.transformOrigin = '';
+        f.style.transform = '';
+        const img = f.querySelector('img');
+        if(img) img.style.animationPlayState = '';
+      });
+    }, 1150);
+  }
+
+  function stopFlipCycle(){
+    clearInterval(flipTimer); clearTimeout(flipStartTimer);
+    flipTimer = flipStartTimer = null;
+  }
+
+  function startFlipCycle(slide){
+    stopFlipCycle();
+    const grid = slide.querySelector('.photo-grid');
+    if(!grid) return;
+    // Reset state and any leftover inline styles from a prior FLIP
+    STATES.forEach(s => grid.classList.remove(s));
+    grid.classList.add('state-1');
+    grid.querySelectorAll('figure').forEach(f => {
+      f.classList.remove('flipping');
+      f.style.transition = '';
+      f.style.transformOrigin = '';
+      f.style.transform = '';
+      const img = f.querySelector('img');
+      if(img) img.style.animationPlayState = '';
+    });
+
+    // Wait for entrance stagger to finish (last figure: ~.77s + .9s anim)
+    flipStartTimer = setTimeout(() => {
+      flipMorph(grid);
+      flipTimer = setInterval(() => flipMorph(grid), 4800);
+    }, 2000);
   }
 
   function show(i){
@@ -609,8 +706,8 @@
     idx = (i + slides.length) % slides.length;
     slides[idx].classList.add('active');
     counter.textContent = (idx+1) + ' / ' + slides.length;
-    stopSpotlight();
-    startSpotlight(slides[idx]);
+    stopFlipCycle();
+    startFlipCycle(slides[idx]);
     restartTimer();
   }
 
@@ -650,7 +747,7 @@
   });
 
   restartTimer();
-  startSpotlight(slides[idx]);
+  startFlipCycle(slides[idx]);
 </script>
 </body>
 </html>
