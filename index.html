@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>An Exchange To Remember · UC Berkeley GLOBE</title>
+<title>Life in Berkeley · Song-Ze (Jimmy) Yu</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -219,6 +219,9 @@
     opacity:0;
     animation:figIn .9s cubic-bezier(.22,.61,.36,1) forwards;
   }
+  /* All photos cover their cell. Grid cell shapes adapt to photo
+     orientation so portrait photos sit in tall cells, landscape in
+     wide cells — minimal cropping, no letterboxing. */
   .photo-grid img{
     width:100%;height:100%;object-fit:cover;display:block;
     transform-origin:center center;
@@ -300,51 +303,97 @@
   }
 
   /* ------------------------------------------------------------------
-     HERO ROTATION GRIDS
-     Each grid has a single layout. The figure with .hero class is
-     pinned to the large cell (top-left). Other figures auto-flow in
-     source order. JS rotates .hero each tick; FLIP animates the move.
+     HERO ROTATION GRIDS — orientation-aware
+     Each grid has TWO layouts:
+       .lh  landscape hero  → hero is wide/square, others 1×1
+       .ph  portrait  hero  → hero is tall narrow, grid reshapes
+     JS toggles .lh/.ph based on the current hero photo's orientation.
+     Small cells stay 1×1 (cover-cropped — minimal subject loss).
   ------------------------------------------------------------------ */
 
-  /* --- Academic (3 photos): 2x2, hero spans left column --- */
-  .grid-ac{
-    grid-template-columns:1.7fr 1fr;
-    grid-template-rows:1fr 1fr;
-    grid-auto-flow:dense;
+  /* --- Academic (3 photos: 2P + 1L) ---
+     LH: 3×2, hero 2×2 + 2 small 1×1 = 6 ✓
+     PH: 2×2, hero 1×2 + 2 small 1×1 = 4 ✓ (narrower overall grid)
+  */
+  .grid-ac{ grid-auto-flow:dense; }
+  .grid-ac.lh{
+    grid-template-columns:repeat(3,1fr);
+    grid-template-rows:repeat(2,1fr);
   }
-  .grid-ac figure.hero{ grid-column:1; grid-row:1/span 2; }
+  .grid-ac.lh figure.hero{ grid-column:1/span 2; grid-row:1/span 2; }
 
-  /* --- Berkeleytime (6 photos): 3x3, hero 2x2 + 5 small = 9 --- */
-  .grid-bt{
+  .grid-ac.ph{
+    grid-template-columns:repeat(2,1fr);
+    grid-template-rows:repeat(2,1fr);
+    max-width:60%;margin:0 auto;
+  }
+  .grid-ac.ph figure.hero{ grid-column:1; grid-row:1/span 2; }
+
+  /* --- Berkeleytime (6 photos: 5L + 1P) ---
+     LH: 3×3, hero 2×2 + 5 small = 9 ✓
+     PH: 3×3, hero 1×3 (full height) + 5 small 1×1 = 8 in 9 (1 gap, dense flow)
+  */
+  .grid-bt{ grid-auto-flow:dense; }
+  .grid-bt.lh{
     grid-template-columns:repeat(3,1fr);
     grid-template-rows:repeat(3,1fr);
-    grid-auto-flow:dense;
   }
-  .grid-bt figure.hero{ grid-column:1/span 2; grid-row:1/span 2; }
+  .grid-bt.lh figure.hero{ grid-column:1/span 2; grid-row:1/span 2; }
 
-  /* --- Theta Xi (10 photos): 5x3, hero 3x2 + 9 small = 15 perfect --- */
-  .grid-tx{
+  .grid-bt.ph{
+    grid-template-columns:repeat(3,1fr);
+    grid-template-rows:repeat(3,1fr);
+  }
+  .grid-bt.ph figure.hero{ grid-column:1; grid-row:1/span 3; }
+
+  /* --- Theta Xi (10 photos: 6L + 4P) ---
+     LH: 5×3, hero 3×2 + 9 small 1×1 = 15 ✓
+     PH: 5×3, hero 2×3 (full height) + 9 small 1×1 = 15 ✓
+  */
+  .grid-tx{ grid-auto-flow:dense; }
+  .grid-tx.lh{
     grid-template-columns:repeat(5,1fr);
     grid-template-rows:repeat(3,1fr);
-    grid-auto-flow:dense;
   }
-  .grid-tx figure.hero{ grid-column:1/span 3; grid-row:1/span 2; }
+  .grid-tx.lh figure.hero{ grid-column:1/span 3; grid-row:1/span 2; }
 
-  /* --- iHouse (7 photos): 5x2, hero 2x2 + 6 small = 10 perfect --- */
-  .grid-ih{
+  .grid-tx.ph{
     grid-template-columns:repeat(5,1fr);
-    grid-template-rows:repeat(2,1fr);
-    grid-auto-flow:dense;
+    grid-template-rows:repeat(3,1fr);
   }
-  .grid-ih figure.hero{ grid-column:1/span 2; grid-row:1/span 2; }
+  .grid-tx.ph figure.hero{ grid-column:1/span 2; grid-row:1/span 3; }
 
-  /* --- Travel (5 photos): 4x2, hero 2x2 + 4 small = 8 perfect --- */
-  .grid-tv{
+  /* --- iHouse (7 photos: all L) ---
+     4×3 grid so cells are wide (landscape-shaped),
+     hero 3×2 + 6 small 1×1 = 12 cells ✓
+  */
+  .grid-ih{ grid-auto-flow:dense; }
+  .grid-ih.lh, .grid-ih.ph{
+    grid-template-columns:repeat(4,1fr);
+    grid-template-rows:repeat(3,1fr);
+  }
+  .grid-ih.lh figure.hero, .grid-ih.ph figure.hero{
+    grid-column:1/span 3; grid-row:1/span 2;
+  }
+
+  /* --- Travel (5 photos: 4L + 1P) ---
+     LH: 4×2, hero 2×2 + 4 small = 8 ✓
+     PH: 3×2, hero 1×2 + 4 small 1×1 = 6 ✓ (1 small spills — use 4 only)
+     Actually: PH 3×2 with hero 1×2 = 2 cells, leaves 4 cells for 4 smalls ✓
+  */
+  .grid-tv{ grid-auto-flow:dense; }
+  .grid-tv.lh{
     grid-template-columns:repeat(4,1fr);
     grid-template-rows:repeat(2,1fr);
-    grid-auto-flow:dense;
   }
-  .grid-tv figure.hero{ grid-column:1/span 2; grid-row:1/span 2; }
+  .grid-tv.lh figure.hero{ grid-column:1/span 2; grid-row:1/span 2; }
+
+  .grid-tv.ph{
+    grid-template-columns:repeat(3,1fr);
+    grid-template-rows:repeat(2,1fr);
+    max-width:75%;margin:0 auto;
+  }
+  .grid-tv.ph figure.hero{ grid-column:1; grid-row:1/span 2; }
 
   /* NYC slide - editorial layout */
   .nyc{
@@ -418,15 +467,15 @@
   <!-- 1: COVER -->
   <section class="slide cover active">
     <div class="frame">
-      <div class="eyebrow">UC Berkeley GLOBE · Completion Ceremony</div>
-      <h1>An Exchange<br/><span class="amp">to</span> Remember</h1>
+      <div class="eyebrow">UC Berkeley · 2025 — 2026</div>
+      <h1>Life <span class="amp">in</span><br/>Berkeley</h1>
       <div class="rule"></div>
       <div class="meta">
         <span class="name" style="display:block;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:42px;color:#fff;margin-bottom:22px;letter-spacing:0;font-weight:500">Song-Ze (Jimmy) Yu</span>
-        Computer Science<span class="dot" style="display:inline-block;width:4px;height:4px;border-radius:50%;background:var(--california-gold);margin:0 14px;vertical-align:middle"></span>National Tsing Hua University<span class="name">— Taiwan —</span>
+        Computer Science<span class="dot" style="display:inline-block;width:4px;height:4px;border-radius:50%;background:var(--california-gold);margin:0 14px;vertical-align:middle"></span>National Tsing Hua University
       </div>
     </div>
-    <div class="footer"><span>Spring 2026</span><span>01 / 08</span></div>
+    <div class="footer"><span>UC Berkeley</span><span>01 / 08</span></div>
   </section>
 
   <!-- 2: CURRICULUM (photo-driven) -->
@@ -444,16 +493,16 @@
     </div>
     <div class="photo-grid grid-ac">
       <figure class="hero">
-        <img src="assets/bair.JPG" alt="">
-        <figcaption><span class="eyebrow">Research</span><span class="title">BAIR Lab</span></figcaption>
+        <img src="assets/cdss94-course.PNG" alt="">
+        <figcaption><span class="eyebrow">January · Course</span><span class="title">CDSS 94</span></figcaption>
       </figure>
       <figure>
-        <img src="assets/cdss94-course.PNG" alt="">
-        <figcaption><span class="eyebrow">Course</span><span class="title">CDSS 94</span></figcaption>
+        <img src="assets/bair.JPG" alt="">
+        <figcaption><span class="eyebrow">February · Research</span><span class="title">BAIR Lab</span></figcaption>
       </figure>
       <figure>
         <img src="assets/cdss94-course-final.jpg" alt="">
-        <figcaption><span class="eyebrow">Final pitch</span><span class="title">AGI House</span></figcaption>
+        <figcaption><span class="eyebrow">April · Final pitch</span><span class="title">AGI House</span></figcaption>
       </figure>
     </div>
     <div class="footer dark"><span>I · Curriculum</span><span>02 / 08</span></div>
@@ -474,28 +523,28 @@
     </div>
     <div class="photo-grid grid-bt">
       <figure class="hero">
-        <img src="assets/berkeleytime-retreat.jpg" alt="">
-        <figcaption><span class="eyebrow">Team</span><span class="title">The Berkeleytime Retreat</span></figcaption>
-      </figure>
-      <figure>
         <img src="assets/berkeleytime-asuc-showcase.JPG" alt="">
-        <figcaption><span class="eyebrow">Showcase</span><span class="title">ASUC Demo Day</span></figcaption>
-      </figure>
-      <figure>
-        <img src="assets/berkeleytime-social.jpg" alt="">
-        <figcaption><span class="eyebrow">After hours</span><span class="title">Pod Socials</span></figcaption>
+        <figcaption><span class="eyebrow">December · Showcase</span><span class="title">ASUC Demo Day</span></figcaption>
       </figure>
       <figure>
         <img src="assets/berkeleytime-big-little.jpg" alt="">
-        <figcaption><span class="eyebrow">Mentorship</span><span class="title">Big & Little</span></figcaption>
+        <figcaption><span class="eyebrow">April · Mentorship</span><span class="title">Big & Little</span></figcaption>
       </figure>
       <figure>
-        <img src="assets/berkeleytime-retreat2.JPG" alt="">
-        <figcaption><span class="eyebrow">Off-site</span><span class="title">Spring Retreat</span></figcaption>
+        <img src="assets/berkeleytime-social.jpg" alt="">
+        <figcaption><span class="eyebrow">April · After hours</span><span class="title">Pod Socials</span></figcaption>
       </figure>
       <figure>
         <img src="assets/berkeleytime-friend-grad-photo.JPG" alt="">
-        <figcaption><span class="eyebrow">Goodbyes</span><span class="title">Berkeleytime Graduates Members</span></figcaption>
+        <figcaption><span class="eyebrow">April · Goodbyes</span><span class="title">Berkeleytime Graduates Members</span></figcaption>
+      </figure>
+      <figure>
+        <img src="assets/berkeleytime-retreat2.JPG" alt="">
+        <figcaption><span class="eyebrow">May · Off-site</span><span class="title">Spring Retreat</span></figcaption>
+      </figure>
+      <figure>
+        <img src="assets/berkeleytime-retreat.jpg" alt="">
+        <figcaption><span class="eyebrow">May · Team</span><span class="title">The Berkeleytime Retreat</span></figcaption>
       </figure>
     </div>
     <div class="footer dark"><span>II · Community</span><span>03 / 08</span></div>
@@ -516,44 +565,44 @@
     </div>
     <div class="photo-grid grid-tx">
       <figure class="hero">
-        <img src="assets/theta-xi-composite-photo.JPG" alt="">
-        <figcaption><span class="eyebrow">The Brothers</span><span class="title">Composite Day</span></figcaption>
-      </figure>
-      <figure>
-        <img src="assets/theta-xi-initialization.JPG" alt="">
-        <figcaption><span class="eyebrow">Initiation</span><span class="title">Becoming a Brother</span></figcaption>
-      </figure>
-      <figure>
         <img src="assets/theta-xi-pinning.JPG" alt="">
-        <figcaption><span class="eyebrow">Pinning</span><span class="title">The Letters</span></figcaption>
-      </figure>
-      <figure>
-        <img src="assets/theta-xi-chapter-dinner.JPG" alt="">
-        <figcaption><span class="eyebrow">House Tradition</span><span class="title">Chapter Dinner</span></figcaption>
+        <figcaption><span class="eyebrow">February · Pinning</span><span class="title">The Letters</span></figcaption>
       </figure>
       <figure>
         <img src="assets/theta-xi-party-first.JPG" alt="">
-        <figcaption><span class="eyebrow">First weekend</span><span class="title">My First Theta Xi Party</span></figcaption>
-      </figure>
-      <figure>
-        <img src="assets/theta-xi-6294-alumnis.JPG" alt="">
-        <figcaption><span class="eyebrow">Legacy</span><span class="title">6294 · The Alumni</span></figcaption>
-      </figure>
-      <figure>
-        <img src="assets/theta-xi-mural-pledge-project.JPG" alt="">
-        <figcaption><span class="eyebrow">Pledge project</span><span class="title">The Mural</span></figcaption>
-      </figure>
-      <figure>
-        <img src="assets/theta-xi-retreat.jpg" alt="">
-        <figcaption><span class="eyebrow">Brotherhood</span><span class="title">Chapter Retreat</span></figcaption>
+        <figcaption><span class="eyebrow">February · First weekend</span><span class="title">My First Theta Xi Party</span></figcaption>
       </figure>
       <figure>
         <img src="assets/theta-xi-world-cup.jpg" alt="">
-        <figcaption><span class="eyebrow">Game day</span><span class="title">World Cup at the House</span></figcaption>
+        <figcaption><span class="eyebrow">February · Game day</span><span class="title">World Cup at the House</span></figcaption>
+      </figure>
+      <figure>
+        <img src="assets/theta-xi-chapter-dinner.JPG" alt="">
+        <figcaption><span class="eyebrow">February · House tradition</span><span class="title">Chapter Dinner</span></figcaption>
+      </figure>
+      <figure>
+        <img src="assets/theta-xi-mural-pledge-project.JPG" alt="">
+        <figcaption><span class="eyebrow">March · Pledge project</span><span class="title">The Mural</span></figcaption>
+      </figure>
+      <figure>
+        <img src="assets/theta-xi-initialization.JPG" alt="">
+        <figcaption><span class="eyebrow">April · Initiation</span><span class="title">Becoming a Brother</span></figcaption>
       </figure>
       <figure>
         <img src="assets/theta-xi-social.JPG" alt="">
-        <figcaption><span class="eyebrow">Greek life</span><span class="title">Social Night</span></figcaption>
+        <figcaption><span class="eyebrow">April · Greek life</span><span class="title">Social Night</span></figcaption>
+      </figure>
+      <figure>
+        <img src="assets/theta-xi-retreat.jpg" alt="">
+        <figcaption><span class="eyebrow">April · Brotherhood</span><span class="title">Chapter Retreat</span></figcaption>
+      </figure>
+      <figure>
+        <img src="assets/theta-xi-composite-photo.JPG" alt="">
+        <figcaption><span class="eyebrow">April · The Brothers</span><span class="title">Composite Day</span></figcaption>
+      </figure>
+      <figure>
+        <img src="assets/theta-xi-6294-alumnis.JPG" alt="">
+        <figcaption><span class="eyebrow">April · Legacy</span><span class="title">6294 · The Alumni</span></figcaption>
       </figure>
     </div>
     <div class="footer dark"><span>II · Community</span><span>04 / 08</span></div>
@@ -574,32 +623,32 @@
     </div>
     <div class="photo-grid grid-ih">
       <figure class="hero">
-        <img src="assets/ihouse_taiwan_diversitea.jpg" alt="">
-        <figcaption><span class="eyebrow">I-House · Taiwan</span><span class="title">Diversitea</span></figcaption>
+        <img src="assets/ihouse_taiwanese.jpg" alt="">
+        <figcaption><span class="eyebrow">December · Home away</span><span class="title">Taiwanese at I-House</span></figcaption>
       </figure>
       <figure>
         <img src="assets/japanese_冬至.jpg" alt="">
-        <figcaption><span class="eyebrow">Japanese friends</span><span class="title">Winter Solstice</span></figcaption>
-      </figure>
-      <figure>
-        <img src="assets/ihouse_taiwanese.jpg" alt="">
-        <figcaption><span class="eyebrow">Home away</span><span class="title">Taiwanese at I-House</span></figcaption>
-      </figure>
-      <figure>
-        <img src="assets/shohei.jpg" alt="">
-        <figcaption><span class="eyebrow">MLB</span><span class="title">Greeting Shohei with Japanese Friends</span></figcaption>
+        <figcaption><span class="eyebrow">December · Japanese friends</span><span class="title">Winter Solstice</span></figcaption>
       </figure>
       <figure>
         <img src="assets/bay-area-taiwanese.JPG" alt="">
-        <figcaption><span class="eyebrow">Bay Area</span><span class="title">Taiwanese Networking</span></figcaption>
+        <figcaption><span class="eyebrow">March · Bay Area</span><span class="title">Taiwanese Networking</span></figcaption>
+      </figure>
+      <figure>
+        <img src="assets/ihouse_taiwan_diversitea.jpg" alt="">
+        <figcaption><span class="eyebrow">April · I-House · Taiwan</span><span class="title">Diversitea</span></figcaption>
       </figure>
       <figure>
         <img src="assets/cal-day-party.JPG" alt="">
-        <figcaption><span class="eyebrow">Cal Day</span><span class="title">My first Cal Day</span></figcaption>
+        <figcaption><span class="eyebrow">April · Cal Day</span><span class="title">My first Cal Day</span></figcaption>
       </figure>
       <figure>
         <img src="assets/cal-day-party-2.jpg" alt="">
-        <figcaption><span class="eyebrow">Cal Day</span><span class="title">Frat Party during day time</span></figcaption>
+        <figcaption><span class="eyebrow">April · Cal Day</span><span class="title">Frat Party during day time</span></figcaption>
+      </figure>
+      <figure>
+        <img src="assets/shohei.jpg" alt="">
+        <figcaption><span class="eyebrow">April · MLB</span><span class="title">Greeting Shohei with Japanese Friends</span></figcaption>
       </figure>
     </div>
     <div class="footer dark"><span>II · Community</span><span>05 / 08</span></div>
@@ -620,24 +669,24 @@
     </div>
     <div class="photo-grid grid-tv">
       <figure class="hero">
-        <img src="assets/great_canyon.JPG" alt="">
-        <figcaption><span class="eyebrow">Arizona</span><span class="title">Grand Canyon at Sunrise</span></figcaption>
-      </figure>
-      <figure>
-        <img src="assets/vegas.JPG" alt="">
-        <figcaption><span class="eyebrow">Nevada</span><span class="title">Vegas Strip</span></figcaption>
-      </figure>
-      <figure>
-        <img src="assets/LA-disney.jpg" alt="">
-        <figcaption><span class="eyebrow">Anaheim</span><span class="title">Disneyland</span></figcaption>
-      </figure>
-      <figure>
         <img src="assets/LA.JPG" alt="">
-        <figcaption><span class="eyebrow">California</span><span class="title">Los Angeles</span></figcaption>
+        <figcaption><span class="eyebrow">November · California</span><span class="title">Los Angeles</span></figcaption>
       </figure>
       <figure>
         <img src="assets/LA2.JPG" alt="">
-        <figcaption><span class="eyebrow">Road trip</span><span class="title">South of Berkeley</span></figcaption>
+        <figcaption><span class="eyebrow">November · Road trip</span><span class="title">South of Berkeley</span></figcaption>
+      </figure>
+      <figure>
+        <img src="assets/great_canyon.JPG" alt="">
+        <figcaption><span class="eyebrow">December · Arizona</span><span class="title">Grand Canyon at Sunrise</span></figcaption>
+      </figure>
+      <figure>
+        <img src="assets/vegas.JPG" alt="">
+        <figcaption><span class="eyebrow">December · Nevada</span><span class="title">Vegas Strip</span></figcaption>
+      </figure>
+      <figure>
+        <img src="assets/LA-disney.jpg" alt="">
+        <figcaption><span class="eyebrow">February · Anaheim</span><span class="title">Disneyland</span></figcaption>
       </figure>
     </div>
     <div class="footer dark"><span>III · Travel</span><span>06 / 08</span></div>
@@ -654,9 +703,9 @@
     </div>
     <div class="photos">
       <div class="cycler" style="--dur:12s">
-        <img src="assets/newyork.jpg" alt="" style="animation-delay:0s">
-        <img src="assets/newyork2.jpg" alt="" style="animation-delay:4s">
-        <img src="assets/newyork3.JPG" alt="" style="animation-delay:8s">
+        <img src="assets/newyork3.JPG" alt="" style="animation-delay:0s">
+        <img src="assets/newyork.jpg" alt="" style="animation-delay:4s">
+        <img src="assets/newyork2.jpg" alt="" style="animation-delay:8s">
       </div>
     </div>
     <div class="footer"><span>III · Travel</span><span>07 / 08</span></div>
@@ -668,8 +717,8 @@
       <div class="eyebrow" style="color:var(--california-gold);font-size:12px;letter-spacing:.5em;text-transform:uppercase;margin-bottom:38px;font-weight:500">— Thank you —</div>
       <h2>Berkeley, you've<br/>been <span class="gold">extraordinary</span>.</h2>
       <div class="rule"></div>
-      <p class="sig">— with gratitude, from Taiwan to California.</p>
-      <div class="meta">GLOBE · Spring 2026</div>
+      <p class="sig">— until next time.</p>
+      <div class="meta">UC Berkeley · 2025 — 2026</div>
     </div>
     <div class="footer"><span>Fin.</span><span>08 / 08</span></div>
   </section>
@@ -684,6 +733,33 @@
 </div>
 
 <script>
+  /* Detect each photo's orientation once it loads so the grid can
+     pick a portrait-friendly or landscape-friendly hero shape. */
+  function tagOrientation(img){
+    if(!img.naturalWidth || !img.naturalHeight) return;
+    const fig = img.closest('figure');
+    if(!fig) return;
+    fig.dataset.orient = img.naturalHeight > img.naturalWidth * 1.05
+      ? 'portrait' : 'landscape';
+  }
+  document.querySelectorAll('.photo-grid figure img').forEach(img => {
+    if(img.complete) tagOrientation(img);
+    else img.addEventListener('load', () => {
+      tagOrientation(img);
+      // If this is the hero on the active slide, refresh the layout class
+      const slide = img.closest('.slide.active');
+      if(slide) refreshHeroLayout(slide.querySelector('.photo-grid'));
+    }, { once:true });
+  });
+
+  function refreshHeroLayout(grid){
+    if(!grid) return;
+    const hero = grid.querySelector('figure.hero');
+    const orient = hero?.dataset.orient || 'landscape';
+    grid.classList.toggle('ph', orient === 'portrait');
+    grid.classList.toggle('lh', orient !== 'portrait');
+  }
+
   const slides = Array.from(document.querySelectorAll('.slide'));
   const counter = document.getElementById('counter');
   const bar = document.getElementById('bar');
@@ -757,6 +833,7 @@
       const next = (cur < 0 ? 0 : (cur + 1) % figs.length);
       figs.forEach(f => f.classList.remove('hero'));
       figs[next].classList.add('hero');
+      refreshHeroLayout(grid);
     });
   }
 
@@ -782,6 +859,7 @@
       if(img) img.style.animationPlayState = '';
       f.classList.toggle('hero', i === 0);
     });
+    refreshHeroLayout(grid);
 
     // Wait for entrance stagger to finish (~1.5s), then start hero rotation
     flipStartTimer = setTimeout(() => {
