@@ -376,24 +376,24 @@
     grid-column:1/span 3; grid-row:1/span 2;
   }
 
-  /* --- Travel (5 photos: 4L + 1P) ---
-     LH: 4×2, hero 2×2 + 4 small = 8 ✓
-     PH: 3×2, hero 1×2 + 4 small 1×1 = 6 ✓ (1 small spills — use 4 only)
-     Actually: PH 3×2 with hero 1×2 = 2 cells, leaves 4 cells for 4 smalls ✓
+  /* --- Travel (8 photos: 5L + 3P) ---
+     LH: 4×3, hero 2×2 + 7 small = 11 in 12 (1 dense gap)
+     PH: 4×3, hero 1×3 (full height tall) + 7 small = 10 in 12 (2 gaps)
+     4×3 cells are landscape-shaped (~1.6:1), narrow hero (~0.54:1)
+     matches phone portrait photos cleanly.
   */
   .grid-tv{ grid-auto-flow:dense; }
   .grid-tv.lh{
     grid-template-columns:repeat(4,1fr);
-    grid-template-rows:repeat(2,1fr);
+    grid-template-rows:repeat(3,1fr);
   }
   .grid-tv.lh figure.hero{ grid-column:1/span 2; grid-row:1/span 2; }
 
   .grid-tv.ph{
-    grid-template-columns:repeat(3,1fr);
-    grid-template-rows:repeat(2,1fr);
-    max-width:75%;margin:0 auto;
+    grid-template-columns:repeat(4,1fr);
+    grid-template-rows:repeat(3,1fr);
   }
-  .grid-tv.ph figure.hero{ grid-column:1; grid-row:1/span 2; }
+  .grid-tv.ph figure.hero{ grid-column:1; grid-row:1/span 3; }
 
   /* NYC slide - editorial layout */
   .nyc{
@@ -468,14 +468,14 @@
   <section class="slide cover active">
     <div class="frame">
       <div class="eyebrow">UC Berkeley · 2025 — 2026</div>
-      <h1>Life <span class="amp">in</span><br/>Berkeley</h1>
+      <h1 style="white-space:nowrap">Life in <span class="amp">Berkeley</span></h1>
       <div class="rule"></div>
       <div class="meta">
         <span class="name" style="display:block;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:42px;color:#fff;margin-bottom:22px;letter-spacing:0;font-weight:500">Song-Ze (Jimmy) Yu</span>
         Computer Science<span class="dot" style="display:inline-block;width:4px;height:4px;border-radius:50%;background:var(--california-gold);margin:0 14px;vertical-align:middle"></span>National Tsing Hua University
       </div>
     </div>
-    <div class="footer"><span>UC Berkeley</span><span>01 / 08</span></div>
+    <div class="footer"><span>UC Berkeley</span><span>01 / 07</span></div>
   </section>
 
   <!-- 2: CURRICULUM (photo-driven) -->
@@ -505,7 +505,7 @@
         <figcaption><span class="eyebrow">April · Final pitch</span><span class="title">AGI House</span></figcaption>
       </figure>
     </div>
-    <div class="footer dark"><span>I · Curriculum</span><span>02 / 08</span></div>
+    <div class="footer dark"><span>I · Curriculum</span><span>02 / 07</span></div>
   </section>
 
   <!-- 3: BERKELEYTIME -->
@@ -547,7 +547,7 @@
         <figcaption><span class="eyebrow">May · Team</span><span class="title">The Berkeleytime Retreat</span></figcaption>
       </figure>
     </div>
-    <div class="footer dark"><span>II · Community</span><span>03 / 08</span></div>
+    <div class="footer dark"><span>II · Community</span><span>03 / 07</span></div>
   </section>
 
   <!-- 4: THETA XI -->
@@ -605,7 +605,7 @@
         <figcaption><span class="eyebrow">April · Legacy</span><span class="title">6294 · The Alumni</span></figcaption>
       </figure>
     </div>
-    <div class="footer dark"><span>II · Community</span><span>04 / 08</span></div>
+    <div class="footer dark"><span>II · Community</span><span>04 / 07</span></div>
   </section>
 
   <!-- 5: I-HOUSE -->
@@ -651,20 +651,20 @@
         <figcaption><span class="eyebrow">April · MLB</span><span class="title">Greeting Shohei with Japanese Friends</span></figcaption>
       </figure>
     </div>
-    <div class="footer dark"><span>II · Community</span><span>05 / 08</span></div>
+    <div class="footer dark"><span>II · Community</span><span>05 / 07</span></div>
   </section>
 
-  <!-- 6: TRAVEL (West) -->
+  <!-- 6: TRAVEL (Coast to Coast) -->
   <section class="slide grid-slide">
     <div class="header">
       <div>
         <div class="tag">III · On the Road</div>
-        <h2><em>West </em>of Berkeley.</h2>
+        <h2><em>Coast </em>to Coast.</h2>
       </div>
       <div class="stat">
-        Vegas with friends from Japan & Korea,<br/>
-        Disney in LA, Taiwanese road-trips,<br/>
-        the Grand Canyon at sunrise.
+        From the Strip to the Grand Canyon,<br/>
+        Disneyland in February,<br/>
+        and Christmas in New York.
       </div>
     </div>
     <div class="photo-grid grid-tv">
@@ -685,49 +685,42 @@
         <figcaption><span class="eyebrow">December · Nevada</span><span class="title">Vegas Strip</span></figcaption>
       </figure>
       <figure>
+        <img src="assets/newyork3.JPG" alt="">
+        <figcaption><span class="eyebrow">December · New York</span><span class="title">Brooklyn Bridge</span></figcaption>
+      </figure>
+      <figure>
+        <img src="assets/newyork.jpg" alt="">
+        <figcaption><span class="eyebrow">December · New York</span><span class="title">Christmas Eve</span></figcaption>
+      </figure>
+      <figure>
+        <img src="assets/newyork2.jpg" alt="">
+        <figcaption><span class="eyebrow">December · New York</span><span class="title">Christmas Morning</span></figcaption>
+      </figure>
+      <figure>
         <img src="assets/LA-disney.jpg" alt="">
         <figcaption><span class="eyebrow">February · Anaheim</span><span class="title">Disneyland</span></figcaption>
       </figure>
     </div>
-    <div class="footer dark"><span>III · Travel</span><span>06 / 08</span></div>
-  </section>
-
-  <!-- 7: NYC -->
-  <section class="slide nyc">
-    <div class="text">
-      <div class="tag">III · Winter Break</div>
-      <h2>And then,<br/>New York.</h2>
-      <p class="lede">
-        Cold streets, warm hands. A city, a Christmas, and the person I came to call mine.
-      </p>
-    </div>
-    <div class="photos">
-      <div class="cycler" style="--dur:12s">
-        <img src="assets/newyork3.JPG" alt="" style="animation-delay:0s">
-        <img src="assets/newyork.jpg" alt="" style="animation-delay:4s">
-        <img src="assets/newyork2.jpg" alt="" style="animation-delay:8s">
-      </div>
-    </div>
-    <div class="footer"><span>III · Travel</span><span>07 / 08</span></div>
+    <div class="footer dark"><span>III · Travel</span><span>06 / 07</span></div>
   </section>
 
   <!-- 8: CLOSING -->
   <section class="slide closing">
     <div class="frame">
-      <div class="eyebrow" style="color:var(--california-gold);font-size:12px;letter-spacing:.5em;text-transform:uppercase;margin-bottom:38px;font-weight:500">— Thank you —</div>
-      <h2>Berkeley, you've<br/>been <span class="gold">extraordinary</span>.</h2>
+      <div class="eyebrow" style="color:var(--california-gold);font-size:12px;letter-spacing:.5em;text-transform:uppercase;margin-bottom:38px;font-weight:500">— To Be Continued —</div>
+      <h2>Until the <span class="gold">next chapter</span>,<br/>Berkeley.</h2>
       <div class="rule"></div>
-      <p class="sig">— until next time.</p>
+      <p class="sig">wait for me.</p>
       <div class="meta">UC Berkeley · 2025 — 2026</div>
     </div>
-    <div class="footer"><span>Fin.</span><span>08 / 08</span></div>
+    <div class="footer"><span>Fin.</span><span>07 / 07</span></div>
   </section>
 
 </div>
 
 <div class="nav">
   <button id="prev">← Prev</button>
-  <button class="pill" id="counter">1 / 8</button>
+  <button class="pill" id="counter">1 / 7</button>
   <button id="next">Next →</button>
   <button id="auto">Auto · ON</button>
 </div>
@@ -770,7 +763,7 @@
   let flipTimer = null;
   let flipStartTimer = null;
   // Per-slide duration in ms (tuned to ~5min total)
-  const durations = [25000, 45000, 40000, 50000, 40000, 40000, 35000, 25000];
+  const durations = [25000, 45000, 40000, 50000, 40000, 50000, 25000];
 
   /* ----------- HERO ROTATION (FLIP-driven) ----------- */
   // Each grid has exactly one figure with .hero (the big tile).
