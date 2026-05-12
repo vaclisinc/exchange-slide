@@ -38,17 +38,6 @@
   }
   .slide.active{opacity:1;visibility:visible;pointer-events:auto}
 
-  /* Progress bar */
-  .progress{
-    position:fixed;top:0;left:0;right:0;height:2px;
-    background:rgba(255,255,255,.08);z-index:50;
-  }
-  .progress > span{
-    display:block;height:100%;
-    background:linear-gradient(90deg,var(--california-gold),#fff);
-    width:0%;transition:width .3s linear;
-  }
-
   /* Footer index */
   .footer{
     position:fixed;left:0;right:0;bottom:0;
@@ -456,11 +445,136 @@
     .split,.nyc{grid-template-columns:1fr;grid-template-rows:auto 1fr}
     .split .gallery,.nyc .photos{height:50vh}
   }
+
+  /* ===== Mobile (phones up to 767px) ===== */
+  @media (max-width: 767px) {
+
+    /* Slides can scroll vertically on mobile */
+    .slide { overflow-y: auto; -webkit-overflow-scrolling: touch; }
+
+    /* -- Cover -- */
+    .cover .frame { padding: 36px 20px 100px; }
+    .cover h1 { white-space: normal !important; font-size: clamp(38px,13vw,72px); }
+    .cover .eyebrow { margin-bottom: 20px; font-size: 10px; letter-spacing: .3em; }
+    .cover .rule { margin-bottom: 20px; }
+    .cover .meta { font-size: 12px; letter-spacing: .12em; }
+
+    /* -- Grid slides -- */
+    .grid-slide {
+      padding: 18px 14px 90px;
+      height: auto;
+      min-height: 100%;
+    }
+    .grid-slide .header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 6px;
+      margin-bottom: 14px;
+    }
+    .grid-slide .header > .stat {
+      text-align: left;
+      font-size: 14px;
+      max-width: 100%;
+      line-height: 1.5;
+    }
+    .grid-slide .stat .big { font-size: 32px; }
+    .grid-slide h2 { white-space: normal; font-size: clamp(26px,9vw,48px); }
+    .tag { margin-bottom: 10px; font-size: 10px; letter-spacing: .3em; }
+
+    /* -- Photo grid: universal 2-column on mobile -- */
+    .photo-grid {
+      display: grid !important;
+      grid-template-columns: 1fr 1fr !important;
+      grid-template-rows: unset !important;
+      grid-auto-rows: 120px !important;
+      gap: 5px !important;
+      flex: none !important;
+      height: auto !important;
+    }
+    /* Reset all specific figure placements */
+    .photo-grid figure {
+      grid-column: auto !important;
+      grid-row: auto !important;
+    }
+    /* Hero: full-width, 2 rows tall */
+    .photo-grid figure.hero {
+      grid-column: 1 / -1 !important;
+      grid-row: span 2 !important;
+    }
+    /* Remove max-width constraint from portrait layout */
+    .photo-grid.ph { max-width: 100% !important; margin: 0 !important; }
+
+    /* -- Navigation -- */
+    .nav { gap: 4px; bottom: 10px; }
+    .nav button { padding: 10px 14px; font-size: 11px; }
+    #printBtn { display: none; }
+
+    /* -- Footer: hidden on mobile (nav takes the role) -- */
+    .footer { display: none; }
+
+    /* -- Closing -- */
+    .closing .frame { padding: 36px 24px 100px; }
+    .closing h2 { font-size: clamp(36px,11vw,80px); }
+  }
+
+  /* Print / Export PDF */
+  @media print {
+    @page { size:16in 9in; margin:0; }
+
+    html,body { height:auto; overflow:visible; background:#000; }
+
+    .progress, .nav, .footer { display:none !important; }
+
+    /* Reset the deck so slides stack vertically */
+    .deck { position:static; }
+
+    .slide {
+      position:relative !important;
+      opacity:1 !important;
+      visibility:visible !important;
+      pointer-events:none;
+      width:100vw;
+      height:9in;
+      page-break-after:always;
+      break-after:page;
+      display:flex !important;
+      overflow:hidden;
+    }
+
+    /* Freeze all animations */
+    *, *::before, *::after {
+      animation:none !important;
+      transition:none !important;
+    }
+
+    /* Grid slides: restore flex column layout */
+    .grid-slide {
+      flex-direction:column;
+      padding:48px 70px;
+    }
+
+    /* Make every figure visible and sized */
+    .photo-grid figure {
+      opacity:1 !important;
+    }
+    .photo-grid figure figcaption {
+      opacity:1 !important;
+      transform:translateY(0) !important;
+    }
+    /* Ensure hero layout class is present if JS hasn't set it yet */
+    .photo-grid:not(.lh):not(.ph) { }
+    .photo-grid { flex:1 1 auto; min-height:0; }
+
+    /* Cover & closing: center content */
+    .cover, .closing {
+      align-items:center;
+      justify-content:center;
+    }
+  }
 </style>
 </head>
 <body>
 
-<div class="progress"><span id="bar"></span></div>
 
 <div class="deck" id="deck">
 
@@ -472,7 +586,7 @@
       <div class="rule"></div>
       <div class="meta">
         <span class="name" style="display:block;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:42px;color:#fff;margin-bottom:22px;letter-spacing:0;font-weight:500">Song-Ze (Jimmy) Yu</span>
-        Computer Science<span class="dot" style="display:inline-block;width:4px;height:4px;border-radius:50%;background:var(--california-gold);margin:0 14px;vertical-align:middle"></span>National Tsing Hua University
+        Computer Science
       </div>
     </div>
     <div class="footer"><span>UC Berkeley</span><span>01 / 07</span></div>
@@ -722,7 +836,7 @@
   <button id="prev">← Prev</button>
   <button class="pill" id="counter">1 / 7</button>
   <button id="next">Next →</button>
-  <button id="auto">Auto · ON</button>
+  <button id="printBtn">⬇ PDF</button>
 </div>
 
 <script>
@@ -755,15 +869,9 @@
 
   const slides = Array.from(document.querySelectorAll('.slide'));
   const counter = document.getElementById('counter');
-  const bar = document.getElementById('bar');
-  const autoBtn = document.getElementById('auto');
   let idx = 0;
-  let auto = true;
-  let timer = null;
   let flipTimer = null;
   let flipStartTimer = null;
-  // Per-slide duration in ms (tuned to ~5min total)
-  const durations = [25000, 45000, 40000, 50000, 40000, 50000, 25000];
 
   /* ----------- HERO ROTATION (FLIP-driven) ----------- */
   // Each grid has exactly one figure with .hero (the big tile).
@@ -868,45 +976,42 @@
     counter.textContent = (idx+1) + ' / ' + slides.length;
     stopFlipCycle();
     startFlipCycle(slides[idx]);
-    restartTimer();
   }
 
   function next(){show(idx+1)}
   function prev(){show(idx-1)}
 
-  function restartTimer(){
-    clearInterval(timer);
-    bar.style.transition = 'none';
-    bar.style.width = '0%';
-    void bar.offsetWidth; // reflow
-    if(!auto) return;
-    const dur = durations[idx] || 30000;
-    bar.style.transition = `width ${dur}ms linear`;
-    bar.style.width = '100%';
-    timer = setTimeout(next, dur);
-  }
-
   document.getElementById('next').onclick = next;
   document.getElementById('prev').onclick = prev;
-  autoBtn.onclick = () => {
-    auto = !auto;
-    autoBtn.textContent = 'Auto · ' + (auto ? 'ON' : 'OFF');
-    restartTimer();
-  };
+  document.getElementById('printBtn').onclick = () => window.print();
+
+  // Touch swipe navigation
+  let touchStartX = 0, touchStartY = 0;
+  document.addEventListener('touchstart', e => {
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
+  }, { passive: true });
+  document.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    const dy = e.changedTouches[0].clientY - touchStartY;
+    // Only fire if clearly horizontal (not a vertical scroll)
+    if (Math.abs(dx) > Math.abs(dy) * 1.2 && Math.abs(dx) > 50) {
+      if (dx < 0) next(); else prev();
+    }
+  }, { passive: true });
 
   document.addEventListener('keydown', e => {
     if(e.key==='ArrowRight' || e.key===' ' || e.key==='PageDown') { e.preventDefault(); next(); }
     else if(e.key==='ArrowLeft' || e.key==='PageUp') { e.preventDefault(); prev(); }
     else if(e.key==='Home'){ show(0); }
     else if(e.key==='End'){ show(slides.length-1); }
-    else if(e.key.toLowerCase()==='a'){ autoBtn.click(); }
+    else if(e.key.toLowerCase()==='p'){ e.preventDefault(); window.print(); }
     else if(e.key.toLowerCase()==='f'){
       if(!document.fullscreenElement) document.documentElement.requestFullscreen();
       else document.exitFullscreen();
     }
   });
 
-  restartTimer();
   startFlipCycle(slides[idx]);
 </script>
 </body>
