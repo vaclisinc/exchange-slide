@@ -464,6 +464,8 @@
       padding: 18px 14px 90px;
       height: auto;
       min-height: 100%;
+      justify-content: flex-start;
+      align-items: stretch;
     }
     .grid-slide .header {
       flex-direction: column;
@@ -505,8 +507,8 @@
     .photo-grid.ph { max-width: 100% !important; margin: 0 !important; }
 
     /* -- Navigation -- */
-    .nav { gap: 4px; bottom: 10px; }
-    .nav button { padding: 10px 14px; font-size: 11px; }
+    .nav { gap: 4px; bottom: 10px; flex-direction: row; flex-wrap: nowrap; }
+    .nav button { padding: 8px 10px; font-size: 10px; white-space: nowrap; flex-shrink: 0; }
     #printBtn { display: none; }
 
     /* -- Footer: hidden on mobile (nav takes the role) -- */
@@ -972,10 +974,12 @@
   function show(i){
     slides[idx].classList.remove('active');
     idx = (i + slides.length) % slides.length;
-    slides[idx].classList.add('active');
+    const s = slides[idx];
+    s.classList.add('active');
+    s.scrollTop = 0;
     counter.textContent = (idx+1) + ' / ' + slides.length;
     stopFlipCycle();
-    startFlipCycle(slides[idx]);
+    startFlipCycle(s);
   }
 
   function next(){show(idx+1)}
