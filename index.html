@@ -62,6 +62,7 @@
     cursor:pointer;backdrop-filter:blur(8px);transition:.2s;
   }
   .nav button:hover{background:rgba(255,255,255,.14);color:#fff}
+  .nav button:disabled{opacity:.25;cursor:default;pointer-events:none}
   .nav .pill{padding:6px 14px;color:rgba(255,255,255,.8)}
 
   /* ----- Cover slide ----- */
@@ -609,7 +610,7 @@
     </div>
     <div class="photo-grid grid-ac">
       <figure class="hero">
-        <img src="assets/cdss94-course.PNG" alt="">
+        <img src="assets/cdss94-course.jpg" alt="">
         <figcaption><span class="eyebrow">January · Course</span><span class="title">CDSS 94</span></figcaption>
       </figure>
       <figure>
@@ -835,7 +836,7 @@
 </div>
 
 <div class="nav">
-  <button id="prev">← Prev</button>
+  <button id="prev" disabled>← Prev</button>
   <button class="pill" id="counter">1 / 7</button>
   <button id="next">Next →</button>
   <button id="printBtn">⬇ PDF</button>
@@ -971,19 +972,22 @@
     }, 2200);
   }
 
+  const prevBtn = document.getElementById('prev');
+
   function show(i){
     slides[idx].classList.remove('active');
-    idx = (i + slides.length) % slides.length;
+    idx = Math.max(0, Math.min(i, slides.length - 1));
     const s = slides[idx];
     s.classList.add('active');
     s.scrollTop = 0;
     counter.textContent = (idx+1) + ' / ' + slides.length;
+    prevBtn.disabled = idx === 0;
     stopFlipCycle();
     startFlipCycle(s);
   }
 
-  function next(){show(idx+1)}
-  function prev(){show(idx-1)}
+  function next(){if(idx < slides.length - 1) show(idx+1)}
+  function prev(){if(idx > 0) show(idx-1)}
 
   document.getElementById('next').onclick = next;
   document.getElementById('prev').onclick = prev;
